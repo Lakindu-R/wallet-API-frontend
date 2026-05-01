@@ -5,7 +5,7 @@ import { Spinner } from "../Spinner";
 import { api } from "@/lib/api";
 import { useWallets } from "../WalletContext";
 import { toast } from "sonner";
-
+import { apiRequest } from "../../../api/api";
 interface Props {
   onCreated: () => void;
 }
@@ -19,28 +19,19 @@ export const CreateWalletView = ({ onCreated }: Props) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!name.trim()) return;
+    setLoading(true);
     setError(null);
     setSuccess(null);
-    if (!name.trim()) {
-      setError("Wallet name is required");
-      return;
-    }
-    if (name.trim().length > 60) {
-      setError("Wallet name must be under 60 characters");
-      return;
-    }
-    setLoading(true);
     try {
-      const wallet = await api.createWallet(name.trim());
+      const wallet = await apiRequest("/wallets", "POST", { name });
       addWallet(wallet);
-      setSuccess(`Wallet "${wallet.name}" created successfully`);
-      toast.success("Wallet created", { description: wallet.name });
+      setSuccess("Wallet created successfully!");
+      toast.success("Wallet created!");
       setName("");
-      setTimeout(onCreated, 800);
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : "Failed to create wallet";
-      setError(msg);
-      toast.error("Failed to create wallet", { description: msg });
+      onCreated();
+    } catch (err: any) {
+      setError(err.message);
     } finally {
       setLoading(false);
     }
@@ -48,13 +39,19 @@ export const CreateWalletView = ({ onCreated }: Props) => {
 
   return (
     <div className="animate-fade-in">
-      <Header title="Create Wallet" subtitle="Spin up a new wallet in seconds" />
+      <Header
+        title="Create Wallet"
+        subtitle="Spin up a new wallet in seconds"
+      />
 
       <div className="max-w-xl">
         <div className="bg-card rounded-2xl p-8 shadow-soft border border-border/50 animate-scale-in">
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label htmlFor="walletName" className="block text-sm font-medium text-foreground mb-2">
+              <label
+                htmlFor="walletName"
+                className="block text-sm font-medium text-foreground mb-2"
+              >
                 Wallet Name
               </label>
               <input
