@@ -1,7 +1,7 @@
 import { LayoutDashboard, PlusCircle, Wallet, ArrowLeftRight, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-
+const API_URL = import.meta.env.VITE_API_URL;
 export type View = "dashboard" | "create" | "details" | "transactions";
 
 const items: { id: View; label: string; icon: React.ElementType }[] = [
@@ -23,6 +23,7 @@ export const Sidebar = ({ active, onChange }: Props) => {
     onChange(v);
     setMobileOpen(false);
   };
+  console.log("API Endpoint is: ",API_URL)
 
   return (
     <>
@@ -87,7 +88,7 @@ export const Sidebar = ({ active, onChange }: Props) => {
         <div className="px-6 py-5 border-t border-sidebar-border">
           <div className="rounded-xl bg-sidebar-accent/50 p-4">
             <p className="text-xs text-sidebar-foreground/70">API Endpoint</p>
-            <p className="text-xs font-mono text-white mt-1 truncate">localhost:8080</p>
+            <p className="text-xs font-mono text-white mt-1 truncate">{API_URL}</p>
           </div>
         </div>
       </aside>
